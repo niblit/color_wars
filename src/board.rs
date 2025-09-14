@@ -1,5 +1,4 @@
-use crate::{coordinates::Coordinates, player::Player, square::Square, BOARD_SIZE};
-
+use crate::{BOARD_SIZE, coordinates::Coordinates, player::Player, square::Square};
 
 // Represents the game board.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -29,7 +28,8 @@ impl Board {
     pub fn setup(red_placement: Coordinates, blue_placement: Coordinates) -> Self {
         let mut board = Board::new(Player::Red);
         board.grid[red_placement.row()][red_placement.column()] = Square::new(Some(Player::Red), 3);
-        board.grid[blue_placement.row()][blue_placement.column()] = Square::new(Some(Player::Blue), 3);
+        board.grid[blue_placement.row()][blue_placement.column()] =
+            Square::new(Some(Player::Blue), 3);
         board
     }
 
@@ -67,25 +67,22 @@ impl Board {
             new_board.grid[pop_location.row()][pop_location.column()].reset_square();
 
             let mut neighbors = vec![];
-            let pop_directions = [
-                (-1, 0),
-                (1, 0),
-                (0, -1),
-                (0, 1)
-            ];
+            let pop_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)];
 
             for (r, c) in pop_directions {
                 let new_row = pop_location.row() as i64 - r;
                 let new_column = pop_location.column() as i64 - c;
 
-
-                if (0..BOARD_SIZE as i64).contains(&new_row) && (0..BOARD_SIZE as i64).contains(&new_column) {
+                if (0..BOARD_SIZE as i64).contains(&new_row)
+                    && (0..BOARD_SIZE as i64).contains(&new_column)
+                {
                     neighbors.push(Coordinates::new(new_row as usize, new_column as usize));
                 }
             }
 
             for neighbor_position in neighbors.iter().cloned() {
-                let square = &mut new_board.grid[neighbor_position.row()][neighbor_position.column()];
+                let square =
+                    &mut new_board.grid[neighbor_position.row()][neighbor_position.column()];
                 square.set_owner(self.turn);
                 square.increment_value();
                 if square.value() >= 4 {

@@ -4,17 +4,14 @@ use crate::BOARD_SIZE;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Coordinates {
     row: usize,
-    column: usize
+    column: usize,
 }
 
 impl Coordinates {
     pub fn new(row: usize, column: usize) -> Self {
         assert!(row < BOARD_SIZE);
         assert!(column < BOARD_SIZE);
-        Self {
-            row,
-            column
-        }
+        Self { row, column }
     }
 
     pub fn row(&self) -> usize {

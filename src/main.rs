@@ -13,7 +13,10 @@ fn main() {
 
     let red_placement = input_coordinates(&valid_placements);
 
-    if let Some(index) = valid_placements.iter().position(|value| *value == red_placement) {
+    if let Some(index) = valid_placements
+        .iter()
+        .position(|value| *value == red_placement)
+    {
         valid_placements.remove(index);
     }
 
@@ -23,6 +26,12 @@ fn main() {
 
     while !board.is_game_over() {
         print_board(&board);
+
+        println!("Engine evaluation:");
+        let (score, best_move) = search(&board, board.turn());
+        println!("Current score: {}", score);
+        println!("The best move is: {},{}", best_move.unwrap().column(), best_move.unwrap().row());
+
         let play = crate::input_coordinates(&board.get_valid_moves());
 
         board = board.make_move(play);

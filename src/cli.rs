@@ -1,6 +1,6 @@
-use std::io::Write;
-use crate::{board::Board, coordinates::Coordinates, player::Player, square::Square, BOARD_SIZE};
+use crate::{BOARD_SIZE, board::Board, coordinates::Coordinates, player::Player, square::Square};
 use colored::{ColoredString, Colorize};
+use std::io::Write;
 
 pub fn input_coordinates(valid_moves: &[Coordinates]) -> Coordinates {
     loop {
@@ -11,12 +11,10 @@ pub fn input_coordinates(valid_moves: &[Coordinates]) -> Coordinates {
             let placement = Coordinates::new(row, column);
             if valid_moves.contains(&placement) {
                 return placement;
-            }
-            else {
+            } else {
                 println!("Invalid move!");
             }
-        }
-        else {
+        } else {
             println!("Coordinates not in range!");
         }
     }
@@ -32,9 +30,8 @@ fn input_usize(message: &str) -> usize {
         let value = value.trim().parse::<usize>();
 
         if let Ok(value) = value {
-            return  value;
-        }
-        else {
+            return value;
+        } else {
             println!("Invalid input");
         }
     }
@@ -49,7 +46,7 @@ pub fn print_board(board: &Board) {
 
     for (i, &row) in board.grid().iter().enumerate() {
         format_row_to_print(i, row);
-    };
+    }
 
     println!("{lower_coordinates_hint}");
 
@@ -66,7 +63,7 @@ fn format_row_to_print(i: usize, row: [Square; BOARD_SIZE]) {
     print!(" {i} ");
     for square in row {
         print!("{}", format_square_to_print(square));
-    };
+    }
     println!(" {i} ");
 }
 
@@ -75,10 +72,9 @@ fn format_square_to_print(square: Square) -> ColoredString {
         let value = format!(" {} ", square.value());
         match player {
             Player::Red => value.on_red(),
-            Player::Blue => value.on_blue()
+            Player::Blue => value.on_blue(),
         }
-    }
-    else {
+    } else {
         String::from(" ▪ ").on_black()
     }
 }

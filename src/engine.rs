@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{board::Board, player::Player};
+use crate::{BOARD_SIZE, board::Board, player::Player, prelude::Coordinates};
 
 // A simple transposition table (memoization) to store results of evaluated board states.
 pub type TranspositionTable = HashMap<Board, (i32, usize)>;
@@ -12,8 +12,8 @@ pub fn evaluate(player: Player, board: &Board) -> i32 {
     let mut p1_squares = 0;
     let mut p2_squares = 0;
 
-    for r in 0..5 {
-        for c in 0..5 {
+    for r in 0..BOARD_SIZE {
+        for c in 0..BOARD_SIZE {
             if let Some(owner) = board.grid()[r][c].owner() {
                 match owner {
                     Player::Red => {
@@ -29,70 +29,95 @@ pub fn evaluate(player: Player, board: &Board) -> i32 {
         }
     }
 
+    // P1 wins
     if p2_squares == 0 && p1_squares > 0 {
         score = i32::MAX;
-    } // P1 wins
+    }
+
+    // P2 wins
     if p1_squares == 0 && p2_squares > 0 {
-        score = i32::MIN;
-    } // P2 wins
+        score = -i32::MAX;
+    }
 
     if player == Player::Red { score } else { -score }
 }
 
+pub fn search(board: &Board, player: Player) -> (i32, Option<Coordinates>) {
+    let mut tt = TranspositionTable::new();
+    alphabeta(
+        board,
+        12,
+        -i32::MAX,
+        i32::MAX,
+        player == Player::Red,
+        &mut tt,
+        None,
+    )
+}
+
 // Minimax algorithm with corrected alpha-beta pruning and transposition table.
-pub fn minimax(
+pub fn alphabeta(
     board: &Board,
     depth: usize,
     mut alpha: i32,
     mut beta: i32,
     maximizing_player: bool,
-    player_to_optimize: Player,
     tt: &mut TranspositionTable,
-) -> (i32, Option<(usize, usize)>) {
+    last_played_move: Option<Coordinates>,
+) -> (i32, Option<Coordinates>) {
+    let player_to_optimize = match maximizing_player {
+        true => Player::Red,
+        false => Player::Blue,
+    };
+
     // Base case: Stop recursion at max depth or game over.
     if depth == 0 || board.is_game_over() {
-        return (evaluate(player_to_optimize, board), None);
+        return (
+            evaluate(player_to_optimize, board),
+            last_played_move,
+        );
     }
 
-    // --- FIX 1 & 2: Corrected Transposition Table Lookup ---
     // Check if the current board state is already in the table and if
     // the stored result is from a search of at least the same depth.
     if let Some(&(stored_eval, stored_depth)) = tt.get(board)
-        && stored_depth >= depth {
-            return (stored_eval, None); // Return the cached evaluation.
-        }
+        && stored_depth >= depth
+    {
+        return (stored_eval, last_played_move); // Return the cached evaluation.
+    }
 
-    let mut best_move = None;
-    let mut best_value = if maximizing_player {
-        i32::MIN
+    let mut best_move = last_played_move;
+    let mut best_score = if maximizing_player {
+        -i32::MAX
     } else {
         i32::MAX
     };
 
     // Iterate through all valid moves from the current position.
-    for m in board.get_valid_moves() {
-        let new_board = board.make_move(m);
+    for current_move in board.get_valid_moves() {
+        let new_board = board.make_move(current_move);
         // Recursive call for the new board state.
-        let (eval, _) = minimax(
+        let (eval, _) = alphabeta(
             &new_board,
             depth - 1,
             alpha,
             beta,
             !maximizing_player, // Switch player perspective.
-            player_to_optimize,
             tt,
+            Some(current_move),
         );
 
         if maximizing_player {
-            if eval > best_value {
-                best_value = eval;
-                best_move = Some(m);
+            if eval > best_score {
+                best_score = eval;
+                best_move = Some(current_move);
             }
             alpha = alpha.max(eval);
-        } else { // Minimizing player
-            if eval < best_value {
-                best_value = eval;
-                best_move = Some(m);
+        } else {
+            // Minimizing player
+            if eval < best_score {
+                best_score = eval;
+                best_move = Some(current_move);
             }
             beta = beta.min(eval);
         }
@@ -104,7 +129,17 @@ pub fn minimax(
     }
 
     // Store the result of this search in the transposition table.
-    tt.insert(board.clone(), (best_value, depth));
+    tt.insert(board.clone(), (best_score, depth));
 
-    (best_value, best_move)
+    let valid = board.get_valid_moves();
+
+    if let Some(best_placement) = best_move
+        && !valid.contains(&best_placement) {
+            best_move = Some(board.get_valid_moves()[0]);
+        }
+
+    if best_move.is_none() {
+        best_move = Some(board.get_valid_moves()[0]);
+    }
+    (best_score, best_move)
 }
