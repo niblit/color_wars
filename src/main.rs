@@ -28,12 +28,18 @@ fn main() {
         print_board(&board);
 
         println!("Engine evaluation:");
-        let (score, best_move) = search(&board, board.turn());
+        let (score, best_move)= search(&board);
         println!("Current score: {}", score);
-        println!("The best move is: {},{}", best_move.unwrap().column(), best_move.unwrap().row());
+        // println!("Best move: [{},{}]", best_move.column(), best_move.row());
 
-        // let play = crate::input_coordinates(&board.get_valid_moves());
-        let play = best_move.unwrap();
+
+        let engine = false;
+
+        let play = if board.turn() == Player::Red || !engine{
+            crate::input_coordinates(&board.get_valid_moves())
+        } else {
+            best_move
+        };
 
         board = board.make_move(play);
     }
