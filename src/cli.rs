@@ -4,8 +4,8 @@ use colored::{ColoredString, Colorize};
 
 pub fn input_coordinates(valid_moves: &[Coordinates]) -> Coordinates {
     loop {
-        let row = input_usize("Row: ");
         let column = input_usize("Column: ");
+        let row = input_usize("Row: ");
 
         if (0..BOARD_SIZE).contains(&row) && (0..BOARD_SIZE).contains(&column) {
             let placement = Coordinates::new(row, column);
@@ -41,10 +41,17 @@ fn input_usize(message: &str) -> usize {
 }
 
 pub fn print_board(board: &Board) {
+    let mut lower_coordinates_hint = String::from("   ");
+    for i in 0..BOARD_SIZE {
+        lower_coordinates_hint = format!("{lower_coordinates_hint} {} ", i);
+    }
+    println!("{lower_coordinates_hint}");
+
     for (i, &row) in board.grid().iter().enumerate() {
         format_row_to_print(i, row);
     };
-    println!("    0  1  2  3  4 ");
+
+    println!("{lower_coordinates_hint}");
 
     println!(
         "Turn: {}",
@@ -60,7 +67,7 @@ fn format_row_to_print(i: usize, row: [Square; BOARD_SIZE]) {
     for square in row {
         print!("{}", format_square_to_print(square));
     };
-    println!();
+    println!(" {i} ");
 }
 
 fn format_square_to_print(square: Square) -> ColoredString {
