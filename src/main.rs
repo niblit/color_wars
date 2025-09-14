@@ -32,7 +32,8 @@ fn main() {
         println!("Current score: {}", score);
         println!("The best move is: {},{}", best_move.unwrap().column(), best_move.unwrap().row());
 
-        let play = crate::input_coordinates(&board.get_valid_moves());
+        // let play = crate::input_coordinates(&board.get_valid_moves());
+        let play = best_move.unwrap();
 
         board = board.make_move(play);
     }

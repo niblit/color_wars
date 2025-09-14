@@ -42,29 +42,33 @@ pub fn print_board(board: &Board) {
     for i in 0..BOARD_SIZE {
         lower_coordinates_hint = format!("{lower_coordinates_hint} {} ", i);
     }
-    println!("{lower_coordinates_hint}");
+    let lower_coordinates_hint = format!("{lower_coordinates_hint}   ");
+
+    let column_coordinates_hint = lower_coordinates_hint.white().on_black();
+    println!("{column_coordinates_hint}");
 
     for (i, &row) in board.grid().iter().enumerate() {
         format_row_to_print(i, row);
     }
 
-    println!("{lower_coordinates_hint}");
+    println!("{column_coordinates_hint}");
 
     println!(
         "Turn: {}",
         match board.turn() {
-            Player::Red => "   ".on_red(),
-            Player::Blue => "   ".on_blue(),
+            Player::Red => " ▪ ".black().on_red(),
+            Player::Blue => " ▪ ".black().on_blue(),
         }
     );
 }
 
 fn format_row_to_print(i: usize, row: [Square; BOARD_SIZE]) {
-    print!(" {i} ");
+    let row_coordinates_hint = format!(" {i} ").white().on_black();
+    print!("{row_coordinates_hint}");
     for square in row {
         print!("{}", format_square_to_print(square));
     }
-    println!(" {i} ");
+    println!("{row_coordinates_hint}");
 }
 
 fn format_square_to_print(square: Square) -> ColoredString {

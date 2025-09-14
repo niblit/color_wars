@@ -2,6 +2,19 @@ use std::collections::HashMap;
 
 use crate::{BOARD_SIZE, board::Board, player::Player, prelude::Coordinates};
 
+pub fn search(board: &Board, player: Player) -> (i32, Option<Coordinates>) {
+    let mut tt = TranspositionTable::new();
+    alphabeta(
+        board,
+        8,
+        -i32::MAX,
+        i32::MAX,
+        player == Player::Red,
+        &mut tt,
+        None,
+    )
+}
+
 // A simple transposition table (memoization) to store results of evaluated board states.
 pub type TranspositionTable = HashMap<Board, (i32, usize)>;
 
@@ -40,19 +53,6 @@ pub fn evaluate(player: Player, board: &Board) -> i32 {
     }
 
     if player == Player::Red { score } else { -score }
-}
-
-pub fn search(board: &Board, player: Player) -> (i32, Option<Coordinates>) {
-    let mut tt = TranspositionTable::new();
-    alphabeta(
-        board,
-        12,
-        -i32::MAX,
-        i32::MAX,
-        player == Player::Red,
-        &mut tt,
-        None,
-    )
 }
 
 // Minimax algorithm with corrected alpha-beta pruning and transposition table.
