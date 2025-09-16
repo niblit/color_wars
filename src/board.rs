@@ -27,9 +27,9 @@ impl Board {
     // An alternate constructor to set up the initial game state.
     pub fn setup(red_placement: Coordinates, blue_placement: Coordinates) -> Self {
         let mut board = Board::new(Player::Red);
-        board.grid[red_placement.row()][red_placement.column()] = Square::new(Some(Player::Red), 3);
+        board.grid[red_placement.row()][red_placement.column()] = Square::new(Player::Red, 3);
         board.grid[blue_placement.row()][blue_placement.column()] =
-            Square::new(Some(Player::Blue), 3);
+            Square::new(Player::Blue, 3);
         board
     }
 
