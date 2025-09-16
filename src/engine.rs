@@ -1,4 +1,4 @@
-use crate::{board::Board, player::Player, prelude::Coordinates, BOARD_SIZE};
+use crate::{board::Board, player::Player, prelude::Coordinates, BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
 
 // Evaluates the board state from the perspective of a given player.
 // Positive score is good for the player, negative is bad.
@@ -7,8 +7,8 @@ pub fn evaluate(board: &Board) -> i32 {
     let mut red_squares = 0usize;
     let mut blue_squares = 0usize;
 
-    for r in 0..BOARD_SIZE {
-        for c in 0..BOARD_SIZE {
+    for r in 0..BOARD_ROW_SIZE {
+        for c in 0..BOARD_COLUMN_SIZE {
             if let Some(owner) = board.grid()[r][c].owner() {
                 match owner {
                     Player::Red => {

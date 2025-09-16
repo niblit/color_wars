@@ -5,8 +5,8 @@ fn main() {
     print_board(&board);
 
     let mut valid_placements = Vec::new();
-    for r in 0..BOARD_SIZE {
-        for c in 0..BOARD_SIZE {
+    for r in 0..BOARD_ROW_SIZE {
+        for c in 0..BOARD_COLUMN_SIZE {
             valid_placements.push(Coordinates::new(r, c));
         }
     }

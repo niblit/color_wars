@@ -1,4 +1,4 @@
-use crate::{BOARD_SIZE, board::Board, coordinates::Coordinates, player::Player, square::Square};
+use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE, board::Board, coordinates::Coordinates, player::Player, square::Square};
 use colored::{ColoredString, Colorize};
 use std::io::Write;
 
@@ -7,7 +7,7 @@ pub fn input_coordinates(valid_moves: &[Coordinates]) -> Coordinates {
         let column = input_usize("Column: ");
         let row = input_usize("Row: ");
 
-        if (0..BOARD_SIZE).contains(&row) && (0..BOARD_SIZE).contains(&column) {
+        if (0..BOARD_ROW_SIZE).contains(&row) && (0..BOARD_COLUMN_SIZE).contains(&column) {
             let placement = Coordinates::new(row, column);
             if valid_moves.contains(&placement) {
                 return placement;
@@ -39,7 +39,7 @@ fn input_usize(message: &str) -> usize {
 
 pub fn print_board(board: &Board) {
     let mut lower_coordinates_hint = String::from("   ");
-    for i in 0..BOARD_SIZE {
+    for i in 0..BOARD_COLUMN_SIZE {
         lower_coordinates_hint = format!("{lower_coordinates_hint} {} ", i);
     }
     let lower_coordinates_hint = format!("{lower_coordinates_hint}   ");
@@ -62,7 +62,7 @@ pub fn print_board(board: &Board) {
     );
 }
 
-fn format_row_to_print(i: usize, row: [Square; BOARD_SIZE]) {
+fn format_row_to_print(i: usize, row: [Square; BOARD_COLUMN_SIZE]) {
     let row_coordinates_hint = format!(" {i} ").white().on_black();
     print!("{row_coordinates_hint}");
     for square in row {

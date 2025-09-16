@@ -1,9 +1,9 @@
-use crate::{BOARD_SIZE, coordinates::Coordinates, player::Player, square::Square};
+use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE, coordinates::Coordinates, player::Player, square::Square};
 
 // Represents the game board.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Board {
-    grid: [[Square; BOARD_SIZE]; BOARD_SIZE],
+    grid: [[Square; BOARD_COLUMN_SIZE]; BOARD_ROW_SIZE],
     turn: Player,
 }
 
@@ -11,12 +11,12 @@ impl Board {
     // Creates a new, empty board for a given player's turn.
     pub fn new(current_turn: Player) -> Self {
         Board {
-            grid: [[Square::default(); BOARD_SIZE]; BOARD_SIZE],
+            grid: [[Square::default(); BOARD_COLUMN_SIZE]; BOARD_ROW_SIZE],
             turn: current_turn,
         }
     }
 
-    pub fn grid(&self) -> [[Square; BOARD_SIZE]; BOARD_SIZE] {
+    pub fn grid(&self) -> [[Square; BOARD_COLUMN_SIZE]; BOARD_ROW_SIZE] {
         self.grid
     }
 
@@ -37,8 +37,8 @@ impl Board {
     // A move is represented by the (row, col) of the square to increment.
     pub fn get_valid_moves(&self) -> Vec<Coordinates> {
         let mut moves = Vec::new();
-        for row in 0..BOARD_SIZE {
-            for column in 0..BOARD_SIZE {
+        for row in 0..BOARD_ROW_SIZE {
+            for column in 0..BOARD_COLUMN_SIZE {
                 if let Some(player) = self.grid[row][column].owner()
                     && player == self.turn
                 {
@@ -73,8 +73,8 @@ impl Board {
                 let new_row = pop_location.row() as i64 - r;
                 let new_column = pop_location.column() as i64 - c;
 
-                if (0..BOARD_SIZE as i64).contains(&new_row)
-                    && (0..BOARD_SIZE as i64).contains(&new_column)
+                if (0..BOARD_ROW_SIZE as i64).contains(&new_row)
+                    && (0..BOARD_COLUMN_SIZE as i64).contains(&new_column)
                 {
                     neighbors.push(Coordinates::new(new_row as usize, new_column as usize));
                 }
@@ -99,8 +99,8 @@ impl Board {
     pub fn is_game_over(&self) -> bool {
         let mut red_squares = 0;
         let mut blue_squares = 0;
-        for r in 0..BOARD_SIZE {
-            for c in 0..BOARD_SIZE {
+        for r in 0..BOARD_ROW_SIZE {
+            for c in 0..BOARD_COLUMN_SIZE {
                 if let Some(owner) = self.grid[r][c].owner() {
                     if owner == Player::Red {
                         red_squares += 1;

@@ -1,4 +1,4 @@
-use crate::BOARD_SIZE;
+use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
 
 // Points to a square on the board
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -9,8 +9,8 @@ pub struct Coordinates {
 
 impl Coordinates {
     pub fn new(row: usize, column: usize) -> Self {
-        assert!(row < BOARD_SIZE);
-        assert!(column < BOARD_SIZE);
+        assert!(row < BOARD_ROW_SIZE);
+        assert!(column < BOARD_COLUMN_SIZE);
         Self { row, column }
     }
 

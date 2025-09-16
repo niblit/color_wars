@@ -6,7 +6,7 @@ mod player;
 mod square;
 
 pub mod prelude {
-    pub use crate::BOARD_SIZE;
+    pub use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
     pub use crate::board::Board;
     pub use crate::cli::{input_coordinates, print_board};
     pub use crate::coordinates::Coordinates;
@@ -15,4 +15,5 @@ pub mod prelude {
     pub use crate::square::Square;
 }
 
-pub const BOARD_SIZE: usize = 5;
+pub const BOARD_ROW_SIZE: usize = 5;
+pub const BOARD_COLUMN_SIZE: usize = 5;
