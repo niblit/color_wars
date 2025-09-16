@@ -1,5 +1,5 @@
 //! The game's AI engine, powered by a minimax search algorithm with alpha-beta pruning.
-use std::{collections::HashMap, time::Duration};
+use std::{collections::{HashMap, HashSet}, time::Duration};
 
 use crate::{board::Board, player::Player, prelude::Coordinates, BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
 
@@ -16,6 +16,8 @@ pub fn evaluate(board: &Board) -> i32 {
     let mut red_squares = 0usize;
     let mut blue_squares = 0usize;
 
+    let mut visited_squares = HashSet::new();
+
     for r in 0..BOARD_ROW_SIZE {
         for c in 0..BOARD_COLUMN_SIZE {
             if let Some(owner) = board.grid()[r][c].owner() {
@@ -28,6 +30,32 @@ pub fn evaluate(board: &Board) -> i32 {
                         score -= 1;
                         blue_squares += 1;
                     }
+                }
+                let our_value = board.grid()[r][c].value();
+                for neighbor in Coordinates::new(r, c).neighbors() {
+                    if visited_squares.contains(&neighbor) ||board.grid()[neighbor.row()][neighbor.column()].owner().is_none(){
+                        continue;
+                    }
+
+                    let perimeter_value = if our_value > board.grid()[neighbor.row()][neighbor.column()].value() {
+                        10
+                    } else if our_value == board.grid()[neighbor.row()][neighbor.column()].value() {
+                        if owner == board.turn() {
+                            10
+                        }
+                        else {
+                            -10
+                        }
+                    } else {
+                        0
+                    };
+
+                    if board.turn() == Player::Red {
+                        score += perimeter_value;
+                    } else {
+                        score -= perimeter_value;
+                    }
+                    visited_squares.insert(neighbor);
                 }
             }
         }
