@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use color_wars::prelude::*;
 
 fn main() {
@@ -33,6 +35,8 @@ fn main() {
     // Create the board with the starting pieces.
     let mut board = Board::setup(red_placement, blue_placement);
 
+    let mut game_history = vec![board.clone()];
+
     // --- Main Game Loop ---
     // The game continues as long as neither player has been eliminated.
     while !board.is_game_over() {
@@ -40,7 +44,7 @@ fn main() {
 
         // Use the engine to suggest a move for the current player.
         println!("Engine evaluation:");
-        let (score, best_move)= search(&board);
+        let (score, best_move)= search(&board, Duration::from_secs(1));
         println!("Current score: {}", score);
         println!("Best move: [{},{}]", best_move.column(), best_move.row());
 
@@ -48,6 +52,7 @@ fn main() {
         let play = crate::input_coordinates(&board.get_valid_moves());
 
         board = board.make_move(play);
+        game_history.push(board.clone());
     }
 
     // --- Game Over ---
