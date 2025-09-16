@@ -1,5 +1,7 @@
 //! Manages the game state and enforces the rules of Color Wars.
-use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE, coordinates::Coordinates, player::Player, square::Square};
+use crate::{
+    BOARD_COLUMN_SIZE, BOARD_ROW_SIZE, coordinates::Coordinates, player::Player, square::Square,
+};
 
 /// A type alias for the 2D array representing the game grid.
 pub type Grid = [[Square; BOARD_COLUMN_SIZE]; BOARD_ROW_SIZE];
@@ -18,11 +20,7 @@ impl Board {
     /// Creates a new, empty board for a given player's turn.
     pub fn new(current_turn: Player) -> Self {
         Board {
-            grid: [
-                [
-                    Square::empty(); BOARD_COLUMN_SIZE
-                ]; BOARD_ROW_SIZE
-            ],
+            grid: [[Square::empty(); BOARD_COLUMN_SIZE]; BOARD_ROW_SIZE],
             turn: current_turn,
         }
     }
@@ -43,8 +41,7 @@ impl Board {
     pub fn setup(red_placement: Coordinates, blue_placement: Coordinates) -> Self {
         let mut board = Board::new(Player::Red);
 
-        board.grid[red_placement.row()][red_placement.column()] =
-            Square::occupied(Player::Red, 3);
+        board.grid[red_placement.row()][red_placement.column()] = Square::occupied(Player::Red, 3);
 
         board.grid[blue_placement.row()][blue_placement.column()] =
             Square::occupied(Player::Blue, 3);
@@ -156,7 +153,10 @@ mod tests {
     fn test_get_valid_moves() {
         let board = setup_test_board();
         assert_eq!(board.get_valid_moves(), vec![Coordinates::new(0, 0)]);
-        let board_p2 = Board { turn: Player::Blue, ..board };
+        let board_p2 = Board {
+            turn: Player::Blue,
+            ..board
+        };
         assert_eq!(board_p2.get_valid_moves(), vec![Coordinates::new(4, 4)]);
     }
 

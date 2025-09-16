@@ -42,13 +42,13 @@ mod square;
 /// By importing everything from this module (`use color_wars::prelude::*`), you can
 /// easily access `Board`, `Player`, `Coordinates`, and other essential items.
 pub mod prelude {
-    pub use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
     pub use crate::board::Board;
     pub use crate::cli::{input_coordinates, print_board};
     pub use crate::coordinates::Coordinates;
     pub use crate::engine::search;
     pub use crate::player::Player;
     pub use crate::square::Square;
+    pub use crate::{BOARD_COLUMN_SIZE, BOARD_ROW_SIZE};
 }
 
 /// The number of rows on the game board. Must be 2 or greater.

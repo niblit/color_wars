@@ -9,10 +9,7 @@ use crate::player::Player;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Square {
     Empty,
-    Occupied {
-        owner: Player,
-        value: u8
-    }
+    Occupied { owner: Player, value: u8 },
 }
 
 impl Square {
@@ -24,10 +21,7 @@ impl Square {
     ///
     /// This is the primary constructor for creating any square state.
     pub fn occupied(owner: Player, value: u8) -> Self {
-        Self::Occupied {
-            owner,
-            value
-        }
+        Self::Occupied { owner, value }
     }
 
     /// Returns the player who owns the square, if any.
@@ -51,7 +45,7 @@ impl Square {
     pub fn increment_value(&mut self) {
         match self {
             Self::Occupied { owner: _, value } => *value += 1,
-            Square::Empty => {},
+            Square::Empty => {}
         }
     }
 
@@ -61,7 +55,7 @@ impl Square {
             Square::Occupied { owner, value: _ } => *owner = new_owner,
             Square::Empty => {
                 *self = Self::occupied(new_owner, 0);
-            },
+            }
         }
     }
 
@@ -70,7 +64,6 @@ impl Square {
         *self = Self::empty();
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -109,10 +102,7 @@ mod tests {
         let mut s = Square::occupied(Player::Blue, 1);
         s.set_owner(Player::Red);
 
-        assert_eq!(
-            s,
-            Square::occupied(Player::Red, 1)
-        );
+        assert_eq!(s, Square::occupied(Player::Red, 1));
     }
 
     #[test]

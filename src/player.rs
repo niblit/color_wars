@@ -51,26 +51,14 @@ mod tests {
 
     #[test]
     fn opponent() {
-        assert_eq!(
-            Player::Red.opponent(),
-            Player::Blue
-        );
-        assert_eq!(
-            Player::Blue.opponent(),
-            Player::Red
-        );
+        assert_eq!(Player::Red.opponent(), Player::Blue);
+        assert_eq!(Player::Blue.opponent(), Player::Red);
     }
 
     #[test]
     fn double_opponent() {
-        assert_eq!(
-            Player::Red.opponent().opponent(),
-            Player::Red
-        );
-        assert_eq!(
-            Player::Blue.opponent().opponent(),
-            Player::Blue
-        );
+        assert_eq!(Player::Red.opponent().opponent(), Player::Red);
+        assert_eq!(Player::Blue.opponent().opponent(), Player::Blue);
     }
 
     #[test]

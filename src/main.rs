@@ -44,7 +44,7 @@ fn main() {
 
         // Use the engine to suggest a move for the current player.
         println!("Engine evaluation:");
-        let (score, best_move)= search(&board, Duration::from_millis(100));
+        let (score, best_move) = search(&board, Duration::from_millis(100));
         println!("Current score: {}", score);
         println!("Best move: [{},{}]", best_move.column(), best_move.row());
 

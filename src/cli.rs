@@ -3,7 +3,10 @@
 //! This module is responsible for two main tasks:
 //! 1. Printing a colorized, human-readable representation of the game board.
 //! 2. Prompting the user for input and validating their moves.
-use crate::{board::{ Board}, coordinates::Coordinates, player::Player, square::Square, BOARD_COLUMN_SIZE, BOARD_ROW_SIZE};
+use crate::{
+    BOARD_COLUMN_SIZE, BOARD_ROW_SIZE, board::Board, coordinates::Coordinates, player::Player,
+    square::Square,
+};
 use colored::{ColoredString, Colorize};
 use std::io::Write;
 
@@ -71,7 +74,6 @@ fn format_board(board: &Board) -> ColoredString {
     for row_index in 0..BOARD_ROW_SIZE {
         let formatted_row = format_single_row(row_index, board.grid()[row_index]);
         formatted_board = format!("{formatted_board}{formatted_row}\n").into();
-
     }
     formatted_board = format!("{formatted_board}{}", format_column_coordinates_hint()).into();
 
@@ -108,12 +110,11 @@ fn format_turn_bar(player: Player) -> ColoredString {
 
 fn format_turn(player: Player) -> ColoredString {
     let turn = String::from(" ▪ ").black();
-    let turn = match player {
+
+    match player {
         Player::Red => turn.on_red(),
         Player::Blue => turn.on_blue(),
-    };
-
-    turn
+    }
 }
 
 // Formats a single row of the board, including side coordinate hints.

@@ -1,6 +1,5 @@
 //! Defines the `Coordinates` type for locating squares on the game board.
-
-use crate::{BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
+use crate::{BOARD_COLUMN_SIZE, BOARD_ROW_SIZE};
 
 /// Points to a specific square on the board using row and column indices.
 ///

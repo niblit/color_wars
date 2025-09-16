@@ -1,7 +1,12 @@
 //! The game's AI engine, powered by a minimax search algorithm with alpha-beta pruning.
-use std::{collections::{HashMap, HashSet}, time::Duration};
+use std::{
+    collections::{HashMap, HashSet},
+    time::Duration,
+};
 
-use crate::{board::Board, player::Player, prelude::Coordinates, BOARD_ROW_SIZE, BOARD_COLUMN_SIZE};
+use crate::{
+    BOARD_COLUMN_SIZE, BOARD_ROW_SIZE, board::Board, player::Player, prelude::Coordinates,
+};
 
 /// Evaluates the board state from a static, Red-player perspective.
 ///
@@ -33,19 +38,20 @@ pub fn evaluate(board: &Board) -> i32 {
                 }
                 let our_value = board.grid()[r][c].value();
                 for neighbor in Coordinates::new(r, c).neighbors() {
-                    if visited_squares.contains(&neighbor) ||board.grid()[neighbor.row()][neighbor.column()].owner().is_none(){
+                    if visited_squares.contains(&neighbor)
+                        || board.grid()[neighbor.row()][neighbor.column()]
+                            .owner()
+                            .is_none()
+                    {
                         continue;
                     }
 
-                    let perimeter_value = if our_value > board.grid()[neighbor.row()][neighbor.column()].value() {
+                    let perimeter_value = if our_value
+                        > board.grid()[neighbor.row()][neighbor.column()].value()
+                    {
                         10
                     } else if our_value == board.grid()[neighbor.row()][neighbor.column()].value() {
-                        if owner == board.turn() {
-                            10
-                        }
-                        else {
-                            -10
-                        }
+                        if owner == board.turn() { 10 } else { -10 }
                     } else {
                         0
                     };
@@ -94,7 +100,11 @@ pub fn search(board: &Board, time: Duration) -> (i32, Coordinates) {
     let placement_evaluations = board.get_valid_moves();
 
     let mut best_placement = placement_evaluations[0];
-    let mut best_score = if maximizing_player { i32::MIN } else { i32::MAX };
+    let mut best_score = if maximizing_player {
+        i32::MIN
+    } else {
+        i32::MAX
+    };
 
     let start = std::time::Instant::now();
 
@@ -108,12 +118,23 @@ pub fn search(board: &Board, time: Duration) -> (i32, Coordinates) {
         let mut alpha = i32::MIN;
         let mut beta = i32::MAX;
 
-        let mut current_best_score_for_depth = if maximizing_player { i32::MIN } else { i32::MAX };
+        let mut current_best_score_for_depth = if maximizing_player {
+            i32::MIN
+        } else {
+            i32::MAX
+        };
 
         for current_placement in &placement_evaluations {
             let current_placement = *current_placement;
             let board_after_move = board.make_move(current_placement);
-            let score = alpha_beta_prunning(&board_after_move, current_depth - 1, alpha, beta, !maximizing_player, &mut transposition_table);
+            let score = alpha_beta_prunning(
+                &board_after_move,
+                current_depth - 1,
+                alpha,
+                beta,
+                !maximizing_player,
+                &mut transposition_table,
+            );
 
             if maximizing_player {
                 if score > current_best_score_for_depth {
@@ -122,7 +143,8 @@ pub fn search(board: &Board, time: Duration) -> (i32, Coordinates) {
                     best_placement = current_placement;
                 }
                 alpha = alpha.max(current_best_score_for_depth); // Update alpha for the *next sibling's* search window
-            } else { // Minimizing player
+            } else {
+                // Minimizing player
                 if score < current_best_score_for_depth {
                     current_best_score_for_depth = score;
                     best_placement = current_placement;
@@ -146,14 +168,22 @@ pub fn search(board: &Board, time: Duration) -> (i32, Coordinates) {
 ///
 /// This function explores the game tree to find the best possible score from a given
 /// board state, pruning branches that are probably suboptimal.
-fn alpha_beta_prunning(board: &Board, depth: usize, mut alpha: i32, mut beta: i32, maximizing_player: bool, transposition_table: &mut TranspositionTable) -> i32 {
+fn alpha_beta_prunning(
+    board: &Board,
+    depth: usize,
+    mut alpha: i32,
+    mut beta: i32,
+    maximizing_player: bool,
+    transposition_table: &mut TranspositionTable,
+) -> i32 {
     if depth == 0 || board.is_game_over() {
         return evaluate(board);
     }
 
     if let Some((cached_score, cached_depth)) = transposition_table.get(board)
-        && *cached_depth >= depth {
-            return *cached_score;
+        && *cached_depth >= depth
+    {
+        return *cached_score;
     };
 
     if maximizing_player {
@@ -161,16 +191,14 @@ fn alpha_beta_prunning(board: &Board, depth: usize, mut alpha: i32, mut beta: i3
 
         for current_move in board.get_valid_moves() {
             let board_after_move = board.make_move(current_move);
-            value = value.max(
-                alpha_beta_prunning(
-                    &board_after_move,
-                    depth - 1,
-                    alpha,
-                    beta,
-                    false,
-                    transposition_table
-                )
-            );
+            value = value.max(alpha_beta_prunning(
+                &board_after_move,
+                depth - 1,
+                alpha,
+                beta,
+                false,
+                transposition_table,
+            ));
             if value >= beta {
                 break; // beta cutoff
             }
@@ -178,23 +206,19 @@ fn alpha_beta_prunning(board: &Board, depth: usize, mut alpha: i32, mut beta: i3
         }
         transposition_table.insert(board.clone(), (value, depth));
         value
-    }
-    else
-    {
+    } else {
         let mut value = i32::MAX;
 
         for current_move in board.get_valid_moves() {
             let board_after_move = board.make_move(current_move);
-            value = value.min(
-                alpha_beta_prunning(
-                    &board_after_move,
-                    depth - 1,
-                    alpha,
-                    beta,
-                    true,
-                    transposition_table
-                )
-            );
+            value = value.min(alpha_beta_prunning(
+                &board_after_move,
+                depth - 1,
+                alpha,
+                beta,
+                true,
+                transposition_table,
+            ));
             if value <= alpha {
                 break; // alpha cutoff
             }
