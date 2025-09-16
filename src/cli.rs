@@ -107,8 +107,8 @@ fn format_square_to_print(square: Square) -> ColoredString {
     if let Some(player) = square.owner() {
         let value = format!(" {} ", square.value());
         match player {
-            Player::Red => value.on_red(),
-            Player::Blue => value.on_blue(),
+            Player::Red => value.black().on_red(),
+            Player::Blue => value.black().on_blue(),
         }
     } else {
         String::from(" ▪ ").on_black()
