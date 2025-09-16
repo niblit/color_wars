@@ -31,7 +31,6 @@
 //! ```
 
 mod board;
-mod cli;
 mod coordinates;
 mod engine;
 mod player;
@@ -43,7 +42,6 @@ mod square;
 /// easily access `Board`, `Player`, `Coordinates`, and other essential items.
 pub mod prelude {
     pub use crate::board::Board;
-    pub use crate::cli::{input_coordinates, print_board};
     pub use crate::coordinates::Coordinates;
     pub use crate::engine::search;
     pub use crate::player::Player;
