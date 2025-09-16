@@ -66,21 +66,7 @@ impl Board {
             // The square that pops becomes empty
             new_board.grid[pop_location.row()][pop_location.column()].reset_square();
 
-            let mut neighbors = vec![];
-            let pop_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)];
-
-            for (r, c) in pop_directions {
-                let new_row = pop_location.row() as i64 - r;
-                let new_column = pop_location.column() as i64 - c;
-
-                if (0..BOARD_ROW_SIZE as i64).contains(&new_row)
-                    && (0..BOARD_COLUMN_SIZE as i64).contains(&new_column)
-                {
-                    neighbors.push(Coordinates::new(new_row as usize, new_column as usize));
-                }
-            }
-
-            for neighbor_position in neighbors.iter().cloned() {
+            for neighbor_position in pop_location.neighbors() {
                 let square =
                     &mut new_board.grid[neighbor_position.row()][neighbor_position.column()];
                 square.set_owner(self.turn);

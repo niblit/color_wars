@@ -15,5 +15,8 @@ pub mod prelude {
     pub use crate::square::Square;
 }
 
+// BOARD_ROW_SIZE >= 2
 pub const BOARD_ROW_SIZE: usize = 5;
+
+// BOARD_COLUMN_SIZE >= 2
 pub const BOARD_COLUMN_SIZE: usize = 5;
