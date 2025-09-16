@@ -20,7 +20,7 @@ impl Board {
         Board {
             grid: [
                 [
-                    Square::default(); BOARD_COLUMN_SIZE
+                    Square::empty(); BOARD_COLUMN_SIZE
                 ]; BOARD_ROW_SIZE
             ],
             turn: current_turn,
@@ -44,10 +44,10 @@ impl Board {
         let mut board = Board::new(Player::Red);
 
         board.grid[red_placement.row()][red_placement.column()] =
-            Square::new(Player::Red, 3);
+            Square::occupied(Player::Red, 3);
 
         board.grid[blue_placement.row()][blue_placement.column()] =
-            Square::new(Player::Blue, 3);
+            Square::occupied(Player::Blue, 3);
 
         board
     }
@@ -166,7 +166,7 @@ mod tests {
         let new_board = board.make_move(Coordinates::new(0, 0));
 
         // 1. The popped square (0,0) should be empty
-        assert_eq!(new_board.grid[0][0], Square::default());
+        assert_eq!(new_board.grid[0][0], Square::empty());
 
         // 2. Neighbors (1,0) and (0,1) should be Red with value 1
         assert_eq!(new_board.grid[1][0].owner(), Some(Player::Red));
@@ -182,7 +182,7 @@ mod tests {
     fn test_pop_captures_opponent() {
         let mut board = setup_test_board();
         // Manually place a Blue square next to the Red one
-        board.grid[0][1] = Square::new(Player::Blue, 2);
+        board.grid[0][1] = Square::occupied(Player::Blue, 2);
 
         let new_board = board.make_move(Coordinates::new(0, 0));
 
@@ -194,14 +194,14 @@ mod tests {
     #[test]
     fn test_chain_reaction() {
         let mut board = Board::new(Player::Red);
-        board.grid[0][0] = Square::new(Player::Red, 3);
-        board.grid[0][1] = Square::new(Player::Red, 3); // This will pop from the first pop
+        board.grid[0][0] = Square::occupied(Player::Red, 3);
+        board.grid[0][1] = Square::occupied(Player::Red, 3); // This will pop from the first pop
 
         let new_board = board.make_move(Coordinates::new(0, 0));
 
         // (0,0) pops, increments (0,1) to 4, which also pops.
         // Final state: (0,0) is red and value is 1, (0,1) is empty, and (0,2) and (1, 1) are red and values are 1
-        assert_eq!(new_board.grid[0][1], Square::default());
+        assert_eq!(new_board.grid[0][1], Square::empty());
         // Check squares affected by the second pop
         assert_eq!(new_board.grid[0][0].owner(), Some(Player::Red));
         assert_eq!(new_board.grid[0][0].value(), 1);
@@ -215,7 +215,7 @@ mod tests {
     fn test_is_game_over() {
         let mut board = Board::new(Player::Red);
         assert!(!board.is_game_over()); // Empty board is not game over
-        board.grid[0][0] = Square::new(Player::Red, 1);
+        board.grid[0][0] = Square::occupied(Player::Red, 1);
         assert!(board.is_game_over()); // Only one player has squares
     }
 }
