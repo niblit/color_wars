@@ -61,46 +61,55 @@ type TranspositionTable = HashMap<Board, (i32, usize)>;
 /// A tuple containing the evaluation score of the best move and the `Coordinates` of that move.
 pub fn search(board: &Board, time: Duration) -> (i32, Coordinates) {
     let mut current_depth = 1;
-
-    let mut alpha = i32::MIN;
-    let mut beta = i32::MAX;
-
     let maximizing_player = board.turn() == Player::Red;
-
     let mut transposition_table = TranspositionTable::new();
-
     let placement_evaluations = board.get_valid_moves();
 
-    // You must have a default best move in case no better move is found
     let mut best_placement = placement_evaluations[0];
-    let mut best_score = if maximizing_player { alpha } else { beta };
-
+    let mut best_score = if maximizing_player { i32::MIN } else { i32::MAX };
 
     let start = std::time::Instant::now();
 
-    while start.elapsed() < time {
+    let mut last_iteration_duration = Duration::from_secs(0);
+    loop {
+        if (start.elapsed() + last_iteration_duration) >= time {
+            break;
+        }
+
+        let iteration_start = std::time::Instant::now();
+        let mut alpha = i32::MIN;
+        let mut beta = i32::MAX;
+
+        let mut current_best_score_for_depth = if maximizing_player { i32::MIN } else { i32::MAX };
+
         for current_placement in &placement_evaluations {
             let current_placement = *current_placement;
             let board_after_move = board.make_move(current_placement);
             let score = alpha_beta_prunning(&board_after_move, current_depth - 1, alpha, beta, !maximizing_player, &mut transposition_table);
 
             if maximizing_player {
-                if score > best_score {
-                    best_score = score;
+                if score > current_best_score_for_depth {
+                    current_best_score_for_depth = score;
+                    // Only update the final best_placement if we complete a full search at this depth
                     best_placement = current_placement;
                 }
+                alpha = alpha.max(current_best_score_for_depth); // Update alpha for the *next sibling's* search window
+            } else { // Minimizing player
+                if score < current_best_score_for_depth {
+                    current_best_score_for_depth = score;
+                    best_placement = current_placement;
+                }
+                beta = beta.min(current_best_score_for_depth); // Update beta for the *next sibling's* search window
             }
-            else if score < best_score {
-                best_score = score;
-                best_placement = current_placement;
-            }
-
-            alpha = alpha.max(best_score);
-            beta = beta.min(best_score);
         }
+
+        // The best score from the completed search becomes the official best_score
+        best_score = current_best_score_for_depth;
+
         current_depth += 1;
+        last_iteration_duration = iteration_start.elapsed();
     }
-    dbg!("Searched to depth: {}", current_depth);
+    println!("Searched to depth: {}", current_depth - 1); // -1 because we increment after the last successful search
 
     (best_score, best_placement)
 }
